@@ -288,7 +288,7 @@ If a URL link is not given, a # will be used as a placeholder.',
 
 endif;
 
-function wp_swift_get_social_media()  {
+function wp_swift_get_social_media_array()  {
 	$links = false;
 	$custom_links = false;
 	$social_media_links = false;
@@ -367,4 +367,22 @@ function wp_swift_get_social_media()  {
 		}
 	}
 	return $links;
+}
+
+function wp_swift_get_social_media() {
+	ob_start();
+	$social_media_links = wp_swift_get_social_media_array();
+	if ( count($social_media_links) ) : ?>		     
+	   	<ul class="menu">
+	   		<?php foreach ($social_media_links as $key => $link): 
+	   		?><li><a href="<?php echo $link['link']; ?>" class="icon-link" target="_blank">
+	        		<i class="fa <?php echo $link['icon'].' '. $link['slug']; ?>" aria-hidden="true"></i>
+	        		<span class="hide">Social Media Link <?php echo $link['name']; ?></span>
+	        	</a></li><?php 
+	        endforeach ?>
+	   	</ul>
+	<?php endif;
+	$html = ob_get_contents();
+	ob_end_clean();
+	return $html;
 }
