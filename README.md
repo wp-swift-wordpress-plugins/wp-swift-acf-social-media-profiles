@@ -1,4 +1,4 @@
-# wp-swift-acf-social-media-profiles
+# WP Swift: ACF Social Media Profiles
 
 ### Settings
 
