@@ -1,8 +1,12 @@
 # wp-swift-acf-social-media-profiles
 
+### Settings
+
+Go the **Social Media** page in the WordPress admin area and add social media profiles.
+
 ### Usage
 
-Place this function where ever you want out the icons.
+Place this function where ever you want to output the icons.
 ```php
 <?php 
 if (function_exists('wp_swift_get_social_media')) {
