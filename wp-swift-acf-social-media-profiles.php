@@ -95,6 +95,7 @@ If a URL link is not given, a # will be used as a placeholder.',
 						'youtube' => 'YouTube',
 						'linkedin' => 'Linkedin',
 						'instagram' => 'Instagram',
+						'pinterest' => 'Pinterest',
 					),
 					'default_value' => array (
 						0 => 'facebook',
@@ -288,6 +289,87 @@ If a URL link is not given, a # will be used as a placeholder.',
 
 endif;
 
+if( function_exists('acf_add_local_field_group') ):
+
+acf_add_local_field_group(array(
+	'key' => 'group_5ae6dd0be03df',
+	'title' => 'Font Awesome',
+	'fields' => array(
+		array(
+			'key' => 'field_5ae6e48f39c70',
+			'label' => 'Font Awesome Version',
+			'name' => 'font_awesome_version',
+			'type' => 'radio',
+			'instructions' => '',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'choices' => array(
+				4 => '4',
+				5 => '5',
+			),
+			'allow_null' => 0,
+			'other_choice' => 0,
+			'save_other_choice' => 0,
+			'default_value' => 5,
+			'layout' => 'horizontal',
+			'return_format' => 'value',
+		),
+		array(
+			'key' => 'field_5ae6dd1cb5326',
+			'label' => 'Font Awesome (WordPress Enqueue Scripts)',
+			'name' => 'font_awesome',
+			'type' => 'select',
+			'instructions' => 'Use this if your theme does not support Font Awesome.',
+			'required' => 0,
+			'conditional_logic' => 0,
+			'wrapper' => array(
+				'width' => '',
+				'class' => '',
+				'id' => '',
+			),
+			'choices' => array(
+				'none' => 'None',
+				'fa4' => 'Font Awesome 4',
+				'fa5css' => 'Font Awesome 5 (CSS)',
+				'fa5js' => 'Font Awesome 5 (JavaScript)',
+			),
+			'default_value' => array(
+				0 => 'none',
+			),
+			'allow_null' => 0,
+			'multiple' => 0,
+			'ui' => 0,
+			'ajax' => 0,
+			'return_format' => 'value',
+			'placeholder' => '',
+		),
+	),
+	'location' => array(
+		array(
+			array(
+				'param' => 'options_page',
+				'operator' => '==',
+				'value' => 'wp-swift-acf-social-media-profiles',
+			),
+		),
+	),
+	'menu_order' => 3,
+	'position' => 'normal',
+	'style' => 'default',
+	'label_placement' => 'top',
+	'instruction_placement' => 'label',
+	'hide_on_screen' => '',
+	'active' => 1,
+	'description' => '',
+));
+
+endif;
+
 function wp_swift_get_social_media_array()  {
 	$links = false;
 	$custom_links = false;
@@ -335,7 +417,7 @@ function wp_swift_get_social_media_array()  {
 			if ($links[$i]["icon"] == '') {
 				switch ($links[$i]["slug"]) {
 				    case "facebook":
-				    	$links[$i]["icon"] = "fa-facebook-official";
+				    	$links[$i]["icon"] = "fa-facebook";
 				    	$links[$i]["hex"] = "#3b5998";
 				    	break;
 				    case "twitter":
@@ -358,6 +440,10 @@ function wp_swift_get_social_media_array()  {
 				    	$links[$i]["icon"] = "fa-instagram";
 				    	$links[$i]["hex"] = "#8a3ab9";
 				    	break;
+				    case "pinterest":
+				    	$links[$i]["icon"] = "fa-pinterest";
+				    	$links[$i]["hex"] = "#bd081c";
+				    	break;				    	
 				    default:
 				    	$links[$i]["icon"] = "fa-font-awesome";
 				    	$links[$i]["hex"] = "#1fa67a";
@@ -369,14 +455,25 @@ function wp_swift_get_social_media_array()  {
 	return $links;
 }
 
+function wp_swift_get_font_awesome_class() {
+	$font_awesome_class = 'fab';
+	if ( get_field('font_awesome_version', 'option') ) {
+		$font_awesome_version = get_field('font_awesome_version', 'option');
+		if ($font_awesome_version == '4') {
+			$font_awesome_class = 'fa';
+		}
+	}
+	return $font_awesome_class;	
+}
 function wp_swift_get_social_media() {
-	ob_start();
+	$font_awesome_class = wp_swift_get_font_awesome_class();
 	$social_media_links = wp_swift_get_social_media_array();
+	ob_start();
 	if ( count($social_media_links) ) : ?>		     
 	   	<ul class="menu">
 	   		<?php foreach ($social_media_links as $key => $link): 
 	   		?><li><a href="<?php echo $link['link']; ?>" class="icon-link" target="_blank">
-	        		<i class="fa <?php echo $link['icon'].' '. $link['slug']; ?>" aria-hidden="true"></i>
+	        		<i class="<?php echo $font_awesome_class; ?> <?php echo $link['icon'].' '. $link['slug']; ?>" aria-hidden="true"></i>
 	        		<span class="hide">Social Media Link <?php echo $link['name']; ?></span>
 	        	</a></li><?php 
 	        endforeach ?>
@@ -386,3 +483,37 @@ function wp_swift_get_social_media() {
 	ob_end_clean();
 	return $html;
 }
+function wp_swift_get_social_media_simple() {
+	$font_awesome_class = wp_swift_get_font_awesome_class();
+	$social_media_links = wp_swift_get_social_media_array();
+	ob_start();
+	if ( count($social_media_links) ) : ?>		     
+	   	<div class="social-media">
+	   		<?php foreach ($social_media_links as $key => $link): 
+	   		?><a href="<?php echo $link['link']; ?>" class="icon-link" target="_blank">
+	        		<i class="<?php echo $font_awesome_class; ?> <?php echo $link['icon'].' '. $link['slug']; ?>" aria-hidden="true"></i>
+	        	</a><?php 
+	        endforeach ?>
+	   	</div>
+	<?php endif;
+	$html = ob_get_contents();
+	ob_end_clean();
+	return $html;
+}
+function wp_swift_acf_social_media_profiles() {
+	if ( get_field('font_awesome', 'option') ){
+		$font_awesome = get_field('font_awesome', 'option');
+		switch ($font_awesome) {
+			case 'fa4':
+				wp_enqueue_script( 'fontawesome', 'https://use.fontawesome.com/5016a31c8c.js', array(), '4.7.0', true );
+				break;
+			case 'fa5css':
+				wp_enqueue_style( 'fontawesome', 'https://use.fontawesome.com/releases/v5.0.10/css/all.css', array(), '5.0.10', 'all' );
+				break;	
+			case 'fa5js':
+				wp_enqueue_script( 'fontawesome', 'https://use.fontawesome.com/releases/v5.0.10/js/all.js', array(), '5.0.10', true );
+				break;						
+		}	
+	}
+}
+add_action( 'wp_enqueue_scripts', 'wp_swift_acf_social_media_profiles' ); 
